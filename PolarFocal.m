@@ -21,7 +21,7 @@ R = 1;
 
 rake = 0:pi/180:pi;
 
-col=['b';'r'];
+
 
 subplot(211)
 for i=1:num;
@@ -30,7 +30,7 @@ for i=1:num;
     trend = strike(i) + atan2(cos(dip(i)).*sin(rake), cos(rake));
     rho = R.*tan(pi/4 - (plunge/2));
     % polarb plots ccl from 3:00, so convert to cl from 12:00
-    polar(trend,rho,char(col(i)));
+    polar(trend,rho,'k');
     hold on
     
 end
@@ -47,7 +47,7 @@ for i=1:num;
     trend = strike(i) - atan2(cos(dip(i)).*sin(rake), cos(rake));
     rho = R.*tan(pi/4 - (plunge/2));
     % polarb plots ccl from 3:00, so convert to cl from 12:00
-    polar(trend,rho,char(col(i)));
+    polar(trend,rho,'k');
     hold on
     
 end
