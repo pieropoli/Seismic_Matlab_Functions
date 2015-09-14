@@ -1,4 +1,5 @@
 function out=delayTrace(input,dt)
+warning off
 % dt is in sample
   
     % align the data
