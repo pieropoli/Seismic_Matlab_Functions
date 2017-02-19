@@ -1,7 +1,7 @@
 % Matlab script stereonet.m
 % To plot lines and planes in stereographic
 % (equal-angle) projections
-function PolarFocal(strike,dip,rake)
+function [t1,r1,t2,r2] =PolarFocal(strike,dip,rake)
 % top plot is the lower emisphere
 % bottom is the upper
 
@@ -23,12 +23,14 @@ rake = 0:pi/180:pi;
 
 
 
-subplot(211)
+subplot(223)
 for i=1:num;
 
     plunge = asin(sin(dip(i)).*sin(rake));
     trend = strike(i) + atan2(cos(dip(i)).*sin(rake), cos(rake));
     rho = R.*tan(pi/4 - (plunge/2));
+    t1(i,:)=trend;
+    r1(i,:)=plunge;
     % polarb plots ccl from 3:00, so convert to cl from 12:00
     polar(trend,rho,'k');
     hold on
@@ -40,12 +42,15 @@ view([90 -90])
 
 
 
-subplot(212)
+subplot(221)
 for i=1:num;
 
     plunge = asin(sin(dip(i)).*sin(rake));
     trend = strike(i) - atan2(cos(dip(i)).*sin(rake), cos(rake));
     rho = R.*tan(pi/4 - (plunge/2));
+    
+    t2(i,:)=trend;
+    r2(i,:)=plunge;
     % polarb plots ccl from 3:00, so convert to cl from 12:00
     polar(trend,rho,'k');
     hold on

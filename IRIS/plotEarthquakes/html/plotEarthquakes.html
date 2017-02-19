@@ -1,0 +1,274 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Map Recent Earthquakes</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-02-23"><meta name="DC.source" content="plotEarthquakes.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Map Recent Earthquakes</h1><!--introduction--><p>We'd like to read in locations of recent earthquakes from USGS website and plot them on an interactive map.</p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Read locations from USGS</a></li><li><a href="#2">Extract information per quake</a></li><li><a href="#3">Convert to struct to table</a></li><li><a href="#4">What's in the table?</a></li><li><a href="#5">Add location info to the table</a></li><li><a href="#6">Sort table by earthquake magnitude</a></li><li><a href="#8">Find the biggest quake</a></li><li><a href="#9">First find range of earthquake magnitudes</a></li><li><a href="#10">Plot earthquake locations on webmap</a></li><li><a href="#13">Map with Ocean Basemap to see alignment with some fracture zones</a></li><li><a href="#14">Load in plate boundaries</a></li><li><a href="#15">Find the first plate</a></li><li><a href="#16">Make array of geopoints from the plate boundaries</a></li><li><a href="#17">Draw plate boundaries on map</a></li></ul></div><h2>Read locations from USGS<a name="1"></a></h2><p>Load data from real-time datafeed. Read all the earthquakes in the last month magnitude 4.5 and greater. Find information about the data here: <a href="http://earthquake.usgs.gov/earthquakes/feed/v1.0/glossary.php">http://earthquake.usgs.gov/earthquakes/feed/v1.0/glossary.php</a></p><p>Find the last 30 days, 4.5 or greater. <a href="http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_month.geojson">http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_month.geojson</a></p><p>Could look for last week if we preferred. <a href="http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson">http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson</a></p><pre class="codeinput">options = weboptions(<span class="string">'Timeout'</span>,10);
+quakeDataJSON = webread(<span class="string">'http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_month.geojson'</span>, options);
+</pre><h2>Extract information per quake<a name="2"></a></h2><pre class="codeinput">quakeDataInfo = [quakeDataJSON.features.properties];
+quakeDataLocation = [quakeDataJSON.features.geometry];
+</pre><h2>Convert to struct to table<a name="3"></a></h2><p>open <tt>quakeTable</tt> to see what it looks like</p><pre class="codeinput">quakeTable = struct2table(quakeDataInfo);
+quakeTable(1:5,:)
+</pre><pre class="codeoutput">ans = 
+    mag                    place                        time        updated      tz                                  url                                                                   detail                                       felt     cdi     mmi    alert      status      tsunami    sig    net        code            ids          sources                                       types                                       nst     dmin      rms      gap     magType        type                            title                     
+    ___    ______________________________________    __________    __________    ___    _____________________________________________________________    ___________________________________________________________________________    ____    _____    ___    _____    __________    _______    ___    ____    __________    ______________    _______    ___________________________________________________________________________    ___    _______    ____    _____    _______    ____________    ______________________________________________
+    5.2    '122km ENE of Tairua, New Zealand'        1.4247e+12    1.4247e+12    720    'http://earthquake.usgs.gov/earthquakes/eventpage/usc000tsfu'    'http://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/usc000tsfu.geo...'    [ 0]    [  1]    []     []       'reviewed'    0          416    'us'    'c000tsfu'    ',usc000tsfu,'    ',us,'     ',cap,dyfi,general-link,geoserve,nearby-cities,origin,phase-data,tecton...'    []     [2.622]    1.17    [124]    'mb'       'earthquake'    'M 5.2 - 122km ENE of Tairua, New Zealand'    
+    4.9    '134km SSW of Taron, Papua New Guinea'    1.4247e+12    1.4247e+12    600    'http://earthquake.usgs.gov/earthquakes/eventpage/usc000tsfg'    'http://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/usc000tsfg.geo...'    [ 0]    [  1]    []     []       'reviewed'    0          369    'us'    'c000tsfg'    ',usc000tsfg,'    ',us,'     ',cap,dyfi,general-link,geoserve,nearby-cities,origin,phase-data,tecton...'    []     [1.559]    0.66    [ 90]    'mb'       'earthquake'    'M 4.9 - 134km SSW of Taron, Papua New Guinea'
+    4.6    '3km SSW of Oami, Japan'                  1.4247e+12    1.4247e+12    540    'http://earthquake.usgs.gov/earthquakes/eventpage/usc000tsf4'    'http://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/usc000tsf4.geo...'    [26]    [3.1]    []     []       'reviewed'    0          334    'us'    'c000tsf4'    ',usc000tsf4,'    ',us,'     ',cap,dyfi,general-link,geoserve,nearby-cities,origin,phase-data,tecton...'    []     [0.748]     1.1    [115]    'mb'       'earthquake'    'M 4.6 - 3km SSW of Oami, Japan'              
+    4.5    '119km SW of Port Blair, India'           1.4247e+12    1.4247e+12    360    'http://earthquake.usgs.gov/earthquakes/eventpage/usc000tses'    'http://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/usc000tses.geo...'    [ 0]    [  1]    []     []       'reviewed'    0          312    'us'    'c000tses'    ',usc000tses,'    ',us,'     ',cap,dyfi,general-link,geoserve,nearby-cities,origin,phase-data,tecton...'    []     [1.057]    1.05    [120]    'mb'       'earthquake'    'M 4.5 - 119km SW of Port Blair, India'       
+    4.5    '41km ESE of Iwaki, Japan'                1.4247e+12    1.4247e+12    540    'http://earthquake.usgs.gov/earthquakes/eventpage/usc000tsdx'    'http://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/usc000tsdx.geo...'    []      []       []     []       'reviewed'    0          312    'us'    'c000tsdx'    ',usc000tsdx,'    ',us,'     ',cap,general-link,geoserve,nearby-cities,origin,phase-data,tectonic-su...'    []     [1.047]    1.28    [205]    'mb'       'earthquake'    'M 4.5 - 41km ESE of Iwaki, Japan'            
+</pre><h2>What's in the table?<a name="4"></a></h2><pre class="codeinput">quakeTable.Properties.VariableNames
+</pre><pre class="codeoutput">ans = 
+  Columns 1 through 7
+    'mag'    'place'    'time'    'updated'    'tz'    'url'    'detail'
+  Columns 8 through 14
+    'felt'    'cdi'    'mmi'    'alert'    'status'    'tsunami'    'sig'
+  Columns 15 through 21
+    'net'    'code'    'ids'    'sources'    'types'    'nst'    'dmin'
+  Columns 22 through 26
+    'rms'    'gap'    'magType'    'type'    'title'
+</pre><h2>Add location info to the table<a name="5"></a></h2><p>First let's get the earthquake coordinates.  And then append them to the table of information we collected.</p><pre class="codeinput">eqcoordinates = [quakeDataLocation.coordinates]';
+quakeTable.Lon = eqcoordinates(:,1);
+quakeTable.Lat = eqcoordinates(:,2);
+quakeTable.depth = eqcoordinates(:,3);
+quakeTable.Properties.VariableNames
+</pre><pre class="codeoutput">ans = 
+  Columns 1 through 7
+    'mag'    'place'    'time'    'updated'    'tz'    'url'    'detail'
+  Columns 8 through 14
+    'felt'    'cdi'    'mmi'    'alert'    'status'    'tsunami'    'sig'
+  Columns 15 through 21
+    'net'    'code'    'ids'    'sources'    'types'    'nst'    'dmin'
+  Columns 22 through 28
+    'rms'    'gap'    'magType'    'type'    'title'    'Lon'    'Lat'
+  Column 29
+    'depth'
+</pre><h2>Sort table by earthquake magnitude<a name="6"></a></h2><p>First look at part of the unsorted table</p><pre class="codeinput">quakeTable.mag(1:5)
+</pre><pre class="codeoutput">ans =
+          5.2
+          4.9
+          4.6
+          4.5
+          4.5
+</pre><p>It's much harder to keep like-data together with structs than with tables.</p><pre class="codeinput">quakeTable = sortrows(quakeTable,<span class="string">'mag'</span>,<span class="string">'ascend'</span>);
+quakeTable.mag(end-4:end)
+</pre><pre class="codeoutput">ans =
+          6.3
+          6.4
+          6.7
+          6.7
+          7.1
+</pre><h2>Find the biggest quake<a name="8"></a></h2><pre class="codeinput">quakeTable(end,{<span class="string">'place'</span>,<span class="string">'Lat'</span>, <span class="string">'Lon'</span>,<span class="string">'depth'</span>})
+</pre><pre class="codeoutput">ans = 
+                place                 Lat        Lon      depth
+    _____________________________    ______    _______    _____
+    'Northern Mid-Atlantic Ridge'    52.635    -31.884    16.4 
+</pre><h2>First find range of earthquake magnitudes<a name="9"></a></h2><p>We could have chosen to pin maxmag to the largest we expect and minmag to 4.5 so we can compare monthly maps with colors that coordinated.</p><pre class="codeinput">minmag = min(quakeTable.mag);
+maxmag = max(quakeTable.mag);
+</pre><h2>Plot earthquake locations on webmap<a name="10"></a></h2><p>Find lat and lon Scale icon color by magnitude</p><pre class="codeinput">cm = parula(10);
+iconColor = cm(ceil(1+9*(quakeTable.mag-minmag)/(maxmag-minmag)),:);
+</pre><p>Put name of location as hoverover label</p><pre class="codeinput">names = quakeTable.title;
+</pre><p>Convert quakeTable to geopint vector</p><pre class="codeinput">quakePoints = geopoint(table2struct(quakeTable));
+</pre><h2>Map with Ocean Basemap to see alignment with some fracture zones<a name="13"></a></h2><pre class="codeinput">webmap(<span class="string">'Ocean Basemap'</span>)
+wmmarker(quakePoints,<span class="string">'OverlayName'</span>,<span class="string">'Quake Points'</span>,<span class="keyword">...</span>
+    <span class="string">'FeatureName'</span>,names,<span class="string">'Color'</span>,iconColor,<span class="string">'AutoFit'</span>,false);
+wmzoom(1)
+snapnow
+</pre><img vspace="5" hspace="5" src="plotEarthquakes_01.png" alt=""> <h2>Load in plate boundaries<a name="14"></a></h2><p>I can illustrate file import here.  The data reference for plate boundaries is <a href="http://geoscience.wisc.edu/~chuck/MORVEL/PltBoundaries.html">http://geoscience.wisc.edu/~chuck/MORVEL/PltBoundaries.html</a> Citation: Argus, D. F., Gordon, R. G., and DeMets, C., 2011. Geologically current motion of 56 plates relative to the no-net-rotation reference frame, Geochemistry, Geophysics, Geosystems, accepted for publication, September, 2011.</p><pre class="codeinput">[lat, lon] = importPlates(<span class="string">'All_boundaries.txt'</span>);
+coast = load(<span class="string">'coast'</span>);
+figure
+worldmap <span class="string">world</span>
+setm(gca,<span class="string">'mlabelparallel'</span>,-90,<span class="string">'mlabellocation'</span>,90)
+plotm(coast.lat,coast.long,<span class="string">'Color'</span>,<span class="string">'k'</span>)
+plotm(lat,lon,<span class="string">'LineWidth'</span>,2)
+</pre><img vspace="5" hspace="5" src="plotEarthquakes_02.png" alt=""> <h2>Find the first plate<a name="15"></a></h2><pre class="codeinput">ind = find(isnan(lat),1,<span class="string">'first'</span>)
+plotm(lat(1:ind),lon(1:ind),<span class="string">'Color'</span>,<span class="string">'red'</span>,<span class="string">'Linewidth'</span>,3)
+</pre><pre class="codeoutput">ind =
+   829
+</pre><img vspace="5" hspace="5" src="plotEarthquakes_03.png" alt=""> <h2>Make array of geopoints from the plate boundaries<a name="16"></a></h2><pre class="codeinput">bounds = geopoint(lat,lon);
+</pre><h2>Draw plate boundaries on map<a name="17"></a></h2><p>Center the map on the longitude of largest quake first.</p><pre class="codeinput">wmcenter(0,quakeTable.Lon(end))
+wmline(bounds,<span class="string">'FeatureName'</span>,<span class="string">'Plate Boundaries'</span>,<span class="string">'Color'</span>,<span class="string">'m'</span>,<span class="string">'AutoFit'</span>,false)
+wmzoom(1)
+snapnow
+</pre><img vspace="5" hspace="5" src="plotEarthquakes_04.png" alt=""> <p class="footer">Copyright 2015 The MathWorks, Inc.<br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Map Recent Earthquakes
+% We'd like to read in locations of recent earthquakes from USGS website
+% and plot them on an interactive map.
+
+%%
+%   Copyright 2015 The MathWorks, Inc.
+
+%% Read locations from USGS
+% Load data from real-time datafeed.
+% Read all the earthquakes in the last month magnitude 4.5 and greater.
+% Find information about the data here:
+% http://earthquake.usgs.gov/earthquakes/feed/v1.0/glossary.php
+%
+% Find the last 30 days, 4.5 or greater.
+% http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_month.geojson
+%
+% Could look for last week if we preferred.
+% http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson
+
+options = weboptions('Timeout',10);
+quakeDataJSON = webread('http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_month.geojson', options);
+
+
+%% Extract information per quake
+quakeDataInfo = [quakeDataJSON.features.properties];
+quakeDataLocation = [quakeDataJSON.features.geometry];
+
+%% Convert to struct to table
+% open |quakeTable| to see what it looks like
+quakeTable = struct2table(quakeDataInfo);
+quakeTable(1:5,:)
+
+%% What's in the table?
+quakeTable.Properties.VariableNames
+
+%% Add location info to the table
+% First let's get the earthquake coordinates.  And then append them to the
+% table of information we collected.
+eqcoordinates = [quakeDataLocation.coordinates]';
+quakeTable.Lon = eqcoordinates(:,1);
+quakeTable.Lat = eqcoordinates(:,2);
+quakeTable.depth = eqcoordinates(:,3);
+quakeTable.Properties.VariableNames
+
+%% Sort table by earthquake magnitude
+% First look at part of the unsorted table
+quakeTable.mag(1:5)
+
+%%
+% It's much harder to keep like-data together with structs than with
+% tables.
+quakeTable = sortrows(quakeTable,'mag','ascend');
+quakeTable.mag(end-4:end)
+
+%% Find the biggest quake
+quakeTable(end,{'place','Lat', 'Lon','depth'})
+
+%% First find range of earthquake magnitudes
+% We could have chosen to pin maxmag to the largest we expect and minmag to 4.5
+% so we can compare monthly maps with colors that coordinated.
+minmag = min(quakeTable.mag);
+maxmag = max(quakeTable.mag);
+
+%% Plot earthquake locations on webmap
+% Find lat and lon
+% Scale icon color by magnitude
+cm = parula(10);
+iconColor = cm(ceil(1+9*(quakeTable.mag-minmag)/(maxmag-minmag)),:);
+
+%%
+% Put name of location as hoverover label
+names = quakeTable.title;
+
+%%
+% Convert quakeTable to geopint vector
+quakePoints = geopoint(table2struct(quakeTable));
+
+%% Map with Ocean Basemap to see alignment with some fracture zones
+webmap('Ocean Basemap')
+wmmarker(quakePoints,'OverlayName','Quake Points',...
+    'FeatureName',names,'Color',iconColor,'AutoFit',false);
+wmzoom(1)
+snapnow
+
+%% Load in plate boundaries
+% I can illustrate file import here.  The data reference for plate
+% boundaries is
+% http://geoscience.wisc.edu/~chuck/MORVEL/PltBoundaries.html
+% Citation: Argus, D. F., Gordon, R. G., and DeMets, C., 2011.
+% Geologically current motion of 56 plates relative to the 
+% no-net-rotation reference frame, 
+% Geochemistry, Geophysics, Geosystems, accepted for publication, 
+% September, 2011.
+[lat, lon] = importPlates('All_boundaries.txt');
+coast = load('coast');
+figure
+worldmap world
+setm(gca,'mlabelparallel',-90,'mlabellocation',90)
+plotm(coast.lat,coast.long,'Color','k')
+plotm(lat,lon,'LineWidth',2)
+
+%% Find the first plate
+ind = find(isnan(lat),1,'first')
+plotm(lat(1:ind),lon(1:ind),'Color','red','Linewidth',3)
+
+%% Make array of geopoints from the plate boundaries
+bounds = geopoint(lat,lon);
+
+%% Draw plate boundaries on map 
+% Center the map on the longitude of largest quake first.
+wmcenter(0,quakeTable.Lon(end))
+wmline(bounds,'FeatureName','Plate Boundaries','Color','m','AutoFit',false)
+wmzoom(1)
+snapnow
+
+##### SOURCE END #####
+--></body></html>

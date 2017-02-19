@@ -1,4 +1,4 @@
-function [m] = inverse_radon_freq(d,dt,h,q,N,flow,fhigh,mu,sol);
+function [m] = inverse_radon_freq(d,dt,h,q,N,flow,fhigh,mu,sol)
 %INVERSE_RADON_FREQ: Inverse linear or parabolic Radon transform. 
 %                    Frequency domain alg.
 %
@@ -20,15 +20,12 @@ function [m] = inverse_radon_freq(d,dt,h,q,N,flow,fhigh,mu,sol);
 %  OUT  m:     the linear or parabolic tau-p panel
 %
 
-
-
-
  [nt,nh] = size(d);
  nq = max(size(q));
 
  if N==2; h=h/max(abs(h));end;  
  nfft = 2*(2^nextpow2(nt));
-
+ 
  D = fft(d,nfft,1);
  M = zeros(nfft,nq);
  i = sqrt(-1);

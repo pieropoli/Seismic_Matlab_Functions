@@ -2,32 +2,31 @@
 clear
 clc
 
+phase='directPprem_0_700kmdepth_0_90distance';
 
-phase='directP';
 
-dx=0.1;
-dz=1;
+dx=.1;
+dz=.1;
 
-d=dx:dx:180;
-z=dz:dz:800;
-
+d=0:dx:90;
+z=0:dz:700;
 
 count=1;
 for id = 1 : length(d)
    for iz = 1 : length(z)
     
-       
-    a=tauptime('dep',z(iz),'ph','ttp+','deg',d(id));
+    tic   
+    a=tauptime('dep',z(iz),'ph','ttp+','deg',d(id),'mod','prem');
     if isempty(a)==0
     A=a(1,1).time(1);    
     P=a(1,1).rayparameter;
     if count==1
-    model=a(1,1).modelname;
+    mmodel=a(1,1).modelname;
         
     end
     
-    t(count)=A(1);
-    dist(count)=d(id);
+    ttime(count)=A(1);
+    ddist(count)=d(id);
     depth(count)=z(iz);    
     rayp(count)=P;  
 
@@ -40,11 +39,4 @@ for id = 1 : length(d)
 
 end
 
-table.model=model;
-table.traveltim=t;
-table.depth=depth;
-table.rayp=rayp;
-table.distance=dist;
-
-
-eval(['save travelTime_' char(phase) ' table'])
+eval(['save travelTime_' char(phase) ' mmodel ttime ddist rayp depth'])

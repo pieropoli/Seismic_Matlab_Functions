@@ -1,0 +1,429 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>UsingDatastore</title><meta name="generator" content="MATLAB 8.4"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-02-25"><meta name="DC.source" content="UsingDatastore.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#1">Working with a "Big" Dataset</a></li><li><a href="#2">Preview the data.</a></li><li><a href="#3">Select a subset of information.</a></li><li><a href="#6">Read in the selected information.</a></li><li><a href="#8">Let's see what we've got.</a></li><li><a href="#9">Let's make a histogram of the number of earthquakes vs. time.</a></li><li><a href="#11">Median Time Between Quakes of Quality</a></li><li><a href="#12">Plot time vs. magnitude</a></li><li><a href="#13">Looking for seasonality?</a></li><li><a href="#14">Looking at Earthquakes in Japan</a></li><li><a href="#15">Extract Earthquakes in that Area</a></li><li><a href="#16">Find the Largest Earthquake</a></li><li><a href="#17">Plot on a Map of Japan</a></li><li><a href="#18">Convert lat, lon, depth to x, y, z values and plot</a></li></ul></div><h2>Working with a "Big" Dataset<a name="1"></a></h2><p>In this example, I will load an some historical data, earthquake hypocenters from the <a href="http://www.isc.ac.uk/iscgem/overview.php">ISC-GEM Catalogue</a> and see how we can work when the amount of data may be too large to fit into memory all at once.</p><pre class="codeinput"><span class="comment">%</span>
+</pre><h2>Preview the data.<a name="2"></a></h2><p>Having looked in advance, I know that this spreadsheet has a lot of lines of explanation and header information up front, followed by tabular data. Let's take a look at it.</p><pre class="codeinput">ds = datastore(<span class="string">'isc-gem-cat.csv'</span>,<span class="string">'NumHeaderLines'</span>,56);
+preview(ds)
+</pre><pre class="codeoutput">Warning: Variable names were modified to make them valid MATLAB identifiers. 
+ans = 
+             x_Date              lat    lon     smajax    sminax    strike     q      depth    unc     q_1      mw     unc_1    q_2      s      mo     fac    mo_auth    mpp    mpr    mrr    mrt    mtp    mtt     eventid  
+    _________________________    ___    ____    ______    ______    ______    ____    _____    ____    ____    ____    _____    ____    ____    ___    ___    _______    ___    ___    ___    ___    ___    ___    __________
+    '1900-07-29 06:59:00.00 '    -10     165    NaN       NaN       NaN       'C '    0          25    'C '    7.58    0.66     'C '    'p '    NaN    NaN    NaN        NaN    NaN    NaN    NaN    NaN    NaN    1.6958e+07
+    '1900-10-09 12:28:00.00 '     60    -142    NaN       NaN       NaN       'C '    0         3.8    'C '    7.69    0.68     'C '    'p '    NaN    NaN    NaN        NaN    NaN    NaN    NaN    NaN    NaN    1.6958e+07
+    '1900-10-29 09:11:00.00 '     11     -66    NaN       NaN       NaN       'C '    0         2.8    'C '    7.69    0.68     'C '    'p '    NaN    NaN    NaN        NaN    NaN    NaN    NaN    NaN    NaN    1.6958e+07
+    '1901-08-09 13:01:00.00 '    -22     170    NaN       NaN       NaN       'C '    0        11.1    'C '    7.92    0.71     'C '    'p '    NaN    NaN    NaN        NaN    NaN    NaN    NaN    NaN    NaN    1.6958e+07
+    '1901-08-09 18:33:00.00 '     40     144    NaN       NaN       NaN       'C '    0         6.1    'C '    7.47    0.65     'C '    'p '    NaN    NaN    NaN        NaN    NaN    NaN    NaN    NaN    NaN    1.6958e+07
+    '1902-04-19 02:23:00.00 '     14     -91    NaN       NaN       NaN       'C '    0        23.5    'C '    7.47    0.65     'C '    'p '    NaN    NaN    NaN        NaN    NaN    NaN    NaN    NaN    NaN    1.6958e+07
+    '1902-08-22 03:00:00.00 '     40      77    NaN       NaN       NaN       'C '    0        13.6    'C '    7.69    0.68     'C '    'p '    NaN    NaN    NaN        NaN    NaN    NaN    NaN    NaN    NaN    1.6958e+07
+    '1902-09-22 01:46:00.00 '     18     146    NaN       NaN       NaN       'C '    0        43.6    'C '    7.47    0.65     'C '    'p '    NaN    NaN    NaN        NaN    NaN    NaN    NaN    NaN    NaN    1.6958e+07
+</pre><h2>Select a subset of information.<a name="3"></a></h2><p>I now select the subset of columns that I want to explore from this historical dataset.  You can see I am choosing earthquake location, magnitude, moment, and quality information about the data.  In addition, I specify the format I want to see it in after importing the information to MATLAB.</p><pre class="codeinput">ds.SelectedVariableNames = {<span class="string">'x_Date'</span>,<span class="string">'lat'</span>,<span class="string">'lon'</span>,<span class="keyword">...</span>
+    <span class="string">'depth'</span>,<span class="string">'q_1'</span>,<span class="string">'mw'</span>,<span class="string">'q_2'</span>,<span class="string">'mo'</span>,<span class="string">'mo_auth'</span>};
+ds.SelectedFormats{1} = <span class="string">'%{yyyy-MM-dd HH:mm:ss.SS}D'</span>;
+ds.SelectedFormats{5}= <span class="string">'%C'</span>;
+ds.SelectedFormats{7} = <span class="string">'%C'</span>;
+ds.SelectedFormats{9} = <span class="string">'%s'</span>;
+</pre><pre class="codeinput">preview(ds)
+</pre><pre class="codeoutput">ans = 
+            x_Date            lat    lon     depth    q_1     mw     q_2    mo     mo_auth
+    ______________________    ___    ____    _____    ___    ____    ___    ___    _______
+    1900-07-29 06:59:00.00    -10     165    0        C      7.58    C      NaN    ''     
+    1900-10-09 12:28:00.00     60    -142    0        C      7.69    C      NaN    ''     
+    1900-10-29 09:11:00.00     11     -66    0        C      7.69    C      NaN    ''     
+    1901-08-09 13:01:00.00    -22     170    0        C      7.92    C      NaN    ''     
+    1901-08-09 18:33:00.00     40     144    0        C      7.47    C      NaN    ''     
+    1902-04-19 02:23:00.00     14     -91    0        C      7.47    C      NaN    ''     
+    1902-08-22 03:00:00.00     40      77    0        C      7.69    C      NaN    ''     
+    1902-09-22 01:46:00.00     18     146    0        C      7.47    C      NaN    ''     
+</pre><pre class="codeinput">ds.RowsPerRead = 1000; <span class="comment">% normally 20000</span>
+dataChunk = read(ds); <span class="comment">% show in variable editor</span>
+</pre><h2>Read in the selected information.<a name="6"></a></h2><p>Read it into a <a href="http://www.mathworks.com/help/matlab/ref/table.html"><tt>table</tt></a>, in chunks, selecting only data with high quality depths.</p><pre class="codeinput">reset(ds)
+numreads = 0;
+
+eqQuality = table;
+
+<span class="keyword">while</span> hasdata(ds)
+    eqChunk = read(ds);
+    idx = eqChunk.q_1 == <span class="string">'A'</span>;
+    eqQuality = [eqQuality; eqChunk(idx,:)]; <span class="comment">%#ok&lt;AGROW&gt;</span>
+    numreads = numreads + 1
+<span class="keyword">end</span>
+</pre><pre class="codeoutput">numreads =
+     1
+numreads =
+     2
+numreads =
+     3
+numreads =
+     4
+numreads =
+     5
+numreads =
+     6
+numreads =
+     7
+numreads =
+     8
+numreads =
+     9
+numreads =
+    10
+numreads =
+    11
+numreads =
+    12
+numreads =
+    13
+numreads =
+    14
+numreads =
+    15
+numreads =
+    16
+numreads =
+    17
+numreads =
+    18
+numreads =
+    19
+numreads =
+    20
+numreads =
+    21
+numreads =
+    22
+numreads =
+    23
+</pre><p>If I didn't want to show reading in the chunks, I could have read in the data this way instead, assuming it could all be read at once.</p><pre>    eqQuality = readall(ds);</pre><h2>Let's see what we've got.<a name="8"></a></h2><pre class="codeinput">plot(eqQuality.lon,eqQuality.lat,<span class="string">'.'</span>)
+</pre><img vspace="5" hspace="5" src="UsingDatastore_01.png" alt=""> <h2>Let's make a histogram of the number of earthquakes vs. time.<a name="9"></a></h2><p>First let's see what the timespan is.</p><pre class="codeinput">maxDt = max(eqQuality.x_Date)
+minDt = min(eqQuality.x_Date)
+</pre><pre class="codeoutput">maxDt = 
+   2011-12-27 15:21:59.17
+minDt = 
+   1914-08-04 22:41:39.94
+</pre><p>Now our histogram.</p><pre class="codeinput">histogram(year(eqQuality.x_Date),<span class="string">'BinMethod'</span>,<span class="string">'integers'</span>);
+xlabel(<span class="string">'year'</span>)
+ylabel(<span class="string">'# Quakes'</span>)
+title(<span class="string">'Histogram of Quakes by Year (High Quality Depth Determination)'</span>)
+</pre><img vspace="5" hspace="5" src="UsingDatastore_02.png" alt=""> <h2>Median Time Between Quakes of Quality<a name="11"></a></h2><p>More math on dates.  Let's find some statistics about the time spacing between earthquakes.  Now I am creating a duration array and calculating some statistics from that array.</p><pre class="codeinput">durs = diff(eqQuality.x_Date);
+disp(<span class="string">'          Median           Max           Min (HH:MM:SS)'</span>)
+durStats = [median(durs) max(durs) min(durs)]  ;
+disp(durStats)
+disp(<span class="string">'          Median           Max           Min (days)'</span>)
+disp(days(durStats))
+</pre><pre class="codeoutput">          Median           Max           Min (HH:MM:SS)
+       22:19:10   130234:43:04       00:00:03
+          Median           Max           Min (days)
+      0.92998       5426.4   4.3403e-05
+</pre><h2>Plot time vs. magnitude<a name="12"></a></h2><p>We can zoom in to see more detail.</p><pre class="codeinput">plot(eqQuality.x_Date, eqQuality.mw,<span class="string">'.'</span>)
+</pre><img vspace="5" hspace="5" src="UsingDatastore_03.png" alt=""> <h2>Looking for seasonality?<a name="13"></a></h2><p>We can aggregate the earthquake instances by month instead of year to look for seasonality.</p><pre class="codeinput">histogram(month(eqQuality.x_Date),<span class="string">'BinMethod'</span>,<span class="string">'integers'</span>);
+xlabel(<span class="string">'month'</span>)
+ylabel(<span class="string">'# Quakes'</span>)
+title(<span class="string">'Histogram of Quakes by Year (High Quality Depth Determination)'</span>)
+</pre><img vspace="5" hspace="5" src="UsingDatastore_04.png" alt=""> <h2>Looking at Earthquakes in Japan<a name="14"></a></h2><p>We are interested in looking at a particular area of Japan.</p><div><ul><li><a href="http://www.earthobservatory.sg/news/great-east-japan-tohoku-2011-earthquake-important-lessons-old-dirt#.VMkrtmjF9Sv">http://www.earthobservatory.sg/news/great-east-japan-tohoku-2011-earthquake-important-lessons-old-dirt#.VMkrtmjF9Sv</a></li><li>https://geos309.community.uaf.edu/</li></ul></div><pre class="codeinput">lat = [35 40];
+lon = [135 145];
+</pre><h2>Extract Earthquakes in that Area<a name="15"></a></h2><p>Using logical indexing, we can extract the earthquakes in the areas we are interested in studying further.</p><pre class="codeinput">idxlat = eqQuality.lat &gt; lat(1) &amp; eqQuality.lat &lt; lat(2);
+idxlon = eqQuality.lon &gt; lon(1) &amp; eqQuality.lon &lt; lon(2);
+eqJ = eqQuality(idxlat &amp; idxlon, :);
+
+eqJ.depth = eqJ.depth *(-1000);  <span class="comment">% converting depth to negative values</span>
+</pre><h2>Find the Largest Earthquake<a name="16"></a></h2><pre class="codeinput">[x,idx] = max(eqJ.mw);
+
+eqJ(idx,:)
+</pre><pre class="codeoutput">ans = 
+            x_Date             lat       lon      depth     q_1     mw     q_2     mo     mo_auth 
+    ______________________    ______    ______    ______    ___    ____    ___    ____    ________
+    2011-03-11 05:46:23.15    38.285    142.55    -20000    A      9.09    A      5.31    'gcmt  '
+</pre><h2>Plot on a Map of Japan<a name="17"></a></h2><p>We first plot the earthquakes on a map of Japan to see if they are located in a reasonable position.</p><pre class="codeinput">load <span class="string">japantopo</span>  <span class="comment">% load topo information (from NASA WorldWind WMS server)</span>
+
+f = figure;
+
+<span class="comment">% Plot topography</span>
+worldmap(lat,lon)
+colormap(f,demcmap(double(Z1))); <span class="comment">% change to more appropriate colormap</span>
+geoshow(Z1,R1,<span class="string">'DisplayType'</span>, <span class="string">'texturemap'</span>);
+hold <span class="string">on</span>
+
+<span class="comment">% Plot earthquakes</span>
+ptSz = 2 + 60*(eqJ.mw-5.0)/5.0;  <span class="comment">% use ptSz for magnitude</span>
+scatterm(eqJ.lat,eqJ.lon,ptSz,<span class="keyword">...</span>
+    <span class="string">'MarkerFaceColor'</span>,<span class="string">'y'</span>,<span class="string">'MarkerEdgeColor'</span>,[0 .3 .3])
+
+hold <span class="string">off</span>
+colorbar   <span class="comment">% add a colorbar</span>
+title(<span class="string">'Japan earthquakes'</span>)
+</pre><img vspace="5" hspace="5" src="UsingDatastore_05.png" alt=""> <h2>Convert lat, lon, depth to x, y, z values and plot<a name="18"></a></h2><pre>We are interested in location as a function of depth so to plot the
+quakes, we first convert our locations to a local Cartesian coordinates.
+We assume geodetic coordinates relative to a reference ellipsoid
+('World Geodetic System 1984') to get our x,y,z (enu) values.</pre><pre class="codeinput">rsph = referenceEllipsoid(<span class="string">'earth'</span>);
+[xEast,yNorth,zDepth] = geodetic2enu(eqJ.lat,eqJ.lon,eqJ.depth,38,145,0,rsph);
+
+figure
+
+scatter3(xEast./1000,yNorth./1000,zDepth./1000,ptSz,eqJ.mw,<span class="keyword">...</span>
+    <span class="string">'filled'</span>,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'b'</span>)
+
+xlabel(<span class="string">'East (km)'</span>)
+ylabel(<span class="string">'North (km)'</span>)
+zlabel(<span class="string">'Depth (km)'</span>)
+title(<span class="string">'Japan earthquakes - overhead view'</span>)
+
+axis <span class="string">equal</span>
+zlim([-400 0])
+colorbar
+view(0,90)
+</pre><img vspace="5" hspace="5" src="UsingDatastore_06.png" alt=""> <p>Display image from published results to compare.</p><pre class="codeinput">view(-20,3)
+figure
+<span class="comment">% imshow('Tohoku2-bloc_diagramme_japan_earthquakes.jpg',...</span>
+<span class="comment">%    'InitialMagnification','fit');</span>
+</pre><img vspace="5" hspace="5" src="UsingDatastore_07.png" alt=""> <img vspace="5" hspace="5" src="UsingDatastore_08.png" alt=""> <p class="footer">Copyright 2015 The MathWorks, Inc.<br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Working with a "Big" Dataset
+% In this example, I will load an some historical data, earthquake
+% hypocenters from the <http://www.isc.ac.uk/iscgem/overview.php ISC-GEM
+% Catalogue> and see how we can work when the amount of data may be too
+% large to fit into memory all at once.
+%
+%
+%   Copyright 2015 The MathWorks, Inc.
+%
+
+%% Preview the data.
+% Having looked in advance, I know that this spreadsheet has a lot of lines
+% of explanation and header information up front, followed by tabular data.
+% Let's take a look at it.
+
+ds = datastore('isc-gem-cat.csv','NumHeaderLines',56);
+preview(ds)
+
+%% Select a subset of information.
+% I now select the subset of columns that I want to explore from this
+% historical dataset.  You can see I am choosing earthquake location,
+% magnitude, moment, and quality information about the data.  In addition,
+% I specify the format I want to see it in after importing the information
+% to MATLAB.
+
+ds.SelectedVariableNames = {'x_Date','lat','lon',...
+    'depth','q_1','mw','q_2','mo','mo_auth'};
+ds.SelectedFormats{1} = '%{yyyy-MM-dd HH:mm:ss.SS}D';
+ds.SelectedFormats{5}= '%C';
+ds.SelectedFormats{7} = '%C';
+ds.SelectedFormats{9} = '%s';
+
+%%
+preview(ds)
+
+%% 
+
+ds.RowsPerRead = 1000; % normally 20000
+dataChunk = read(ds); % show in variable editor
+
+%% Read in the selected information.
+% Read it into a <http://www.mathworks.com/help/matlab/ref/table.html
+% |table|>, in chunks, selecting only data with high quality depths.
+
+reset(ds)
+numreads = 0;
+
+eqQuality = table;
+
+while hasdata(ds)
+    eqChunk = read(ds);
+    idx = eqChunk.q_1 == 'A';
+    eqQuality = [eqQuality; eqChunk(idx,:)]; %#ok<AGROW>
+    numreads = numreads + 1
+end
+    
+%%
+% If I didn't want to show reading in the chunks, I could have read in the
+% data this way instead, assuming it could all be read at once.
+%
+%      eqQuality = readall(ds);
+
+%% Let's see what we've got.
+plot(eqQuality.lon,eqQuality.lat,'.')
+
+%% Let's make a histogram of the number of earthquakes vs. time.
+% First let's see what the timespan is.
+
+maxDt = max(eqQuality.x_Date)
+minDt = min(eqQuality.x_Date)
+
+%%
+% Now our histogram.
+
+histogram(year(eqQuality.x_Date),'BinMethod','integers');
+xlabel('year')
+ylabel('# Quakes')
+title('Histogram of Quakes by Year (High Quality Depth Determination)')
+
+%% Median Time Between Quakes of Quality
+% More math on dates.  Let's find some statistics about the time spacing
+% between earthquakes.  Now I am creating a duration array and calculating
+% some statistics from that array.
+
+durs = diff(eqQuality.x_Date); 
+disp('          Median           Max           Min (HH:MM:SS)') 
+durStats = [median(durs) max(durs) min(durs)]  ;
+disp(durStats)
+disp('          Median           Max           Min (days)') 
+disp(days(durStats))
+
+%% Plot time vs. magnitude
+% We can zoom in to see more detail.
+plot(eqQuality.x_Date, eqQuality.mw,'.')
+
+%% Looking for seasonality?
+% We can aggregate the earthquake instances by month instead of year to
+% look for seasonality.
+
+histogram(month(eqQuality.x_Date),'BinMethod','integers');
+xlabel('month')
+ylabel('# Quakes')
+title('Histogram of Quakes by Year (High Quality Depth Determination)')
+
+%% Looking at Earthquakes in Japan
+% We are interested in looking at a particular area of Japan.
+%
+% * http://www.earthobservatory.sg/news/great-east-japan-tohoku-2011-earthquake-important-lessons-old-dirt#.VMkrtmjF9Sv
+% * https://geos309.community.uaf.edu/
+
+lat = [35 40];
+lon = [135 145];
+
+%%  Extract Earthquakes in that Area
+% Using logical indexing, we can extract the earthquakes in the areas we
+% are interested in studying further.
+
+idxlat = eqQuality.lat > lat(1) & eqQuality.lat < lat(2);
+idxlon = eqQuality.lon > lon(1) & eqQuality.lon < lon(2);
+eqJ = eqQuality(idxlat & idxlon, :);
+
+eqJ.depth = eqJ.depth *(-1000);  % converting depth to negative values
+
+%% Find the Largest Earthquake
+
+[x,idx] = max(eqJ.mw);
+
+eqJ(idx,:)
+
+%% Plot on a Map of Japan
+% We first plot the earthquakes on a map of Japan to see if
+% they are located in a reasonable position. 
+
+load japantopo  % load topo information (from NASA WorldWind WMS server)
+
+f = figure;
+
+% Plot topography
+worldmap(lat,lon)
+colormap(f,demcmap(double(Z1))); % change to more appropriate colormap
+geoshow(Z1,R1,'DisplayType', 'texturemap'); 
+hold on
+
+% Plot earthquakes
+ptSz = 2 + 60*(eqJ.mw-5.0)/5.0;  % use ptSz for magnitude
+scatterm(eqJ.lat,eqJ.lon,ptSz,...
+    'MarkerFaceColor','y','MarkerEdgeColor',[0 .3 .3])
+
+hold off
+colorbar   % add a colorbar
+title('Japan earthquakes')
+
+%% Convert lat, lon, depth to x, y, z values and plot
+%  We are interested in location as a function of depth so to plot the
+%  quakes, we first convert our locations to a local Cartesian coordinates.
+%  We assume geodetic coordinates relative to a reference ellipsoid
+% ('World Geodetic System 1984') to get our x,y,z (enu) values. 
+
+rsph = referenceEllipsoid('earth');
+[xEast,yNorth,zDepth] = geodetic2enu(eqJ.lat,eqJ.lon,eqJ.depth,38,145,0,rsph);
+
+figure
+
+scatter3(xEast./1000,yNorth./1000,zDepth./1000,ptSz,eqJ.mw,...
+    'filled','MarkerEdgeColor','b')
+
+xlabel('East (km)')
+ylabel('North (km)')
+zlabel('Depth (km)')
+title('Japan earthquakes - overhead view')
+
+axis equal
+zlim([-400 0])
+colorbar
+view(0,90)
+
+%% 
+% Display image from published results to compare.
+view(-20,3)
+figure
+% imshow('Tohoku2-bloc_diagramme_japan_earthquakes.jpg',...
+%    'InitialMagnification','fit');
+
+##### SOURCE END #####
+--></body></html>

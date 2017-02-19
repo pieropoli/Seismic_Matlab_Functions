@@ -1,7 +1,7 @@
 function out=delayTrace(input,dt)
 warning off
 % dt is in sample
-  
+    out = zeros(size(input));
     % align the data
     if dt > 0
     out = zeros(size(input));
